@@ -30,14 +30,12 @@ char string[] = "qwertytest1";
 char insert[] = "Qwertytest2";
 char *fin = s21_insert(string, insert, -1);
 ck_assert_pstr_eq(fin, S21_NULL);
-free(fin);
 
 #test s21_insert_not_insert_second
 char string[] = "aaabbb";
 char insert[] = "Qwertytest2";
 char *fin = s21_insert(string, insert, 7);
 ck_assert_pstr_eq(fin, S21_NULL);
-free(fin);
 
 #test s21_insert_in_empty_string
 char string[] = "";

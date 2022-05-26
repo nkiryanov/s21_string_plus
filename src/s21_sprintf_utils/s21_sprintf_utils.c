@@ -36,7 +36,6 @@ s21_size_t _truncate_fraction_zeros(char *str, int str_length) {
     return str_end - str;
 }
 
-
 void _set_sign_representation(int sign, specifier_t *spec_ptr,
                               representation_t *repr_ptr) {
     // Set sign prefix representation based on actual sign and sign_flag
@@ -74,7 +73,7 @@ s21_size_t _double_to_alter_science(char *dest, long double ld_number,
     s21_size_t num_length;
     int g_precision;
     int possible_exp = 0;
-    
+
     possible_exp = s21_get_science_exponent(ld_number);
 
     g_precision = spec_prt->precision;
@@ -96,8 +95,8 @@ s21_size_t _double_to_alter_science(char *dest, long double ld_number,
     return num_length;
 }
 
-char * _calloc_str(int str_length) {
-    char* line;
+char *_calloc_str(int str_length) {
+    char *line;
     line = (char *)calloc(str_length + 1, sizeof(char));
     if (line == S21_NULL) {
         exit(1);
