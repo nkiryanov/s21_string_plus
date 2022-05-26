@@ -1,0 +1,53 @@
+#include <limits.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+#include "../s21_string.h"
+
+char std_string[40] = "";
+char s21_string[40] = "";
+
+#suite s21_dtoa
+
+#test s21_dtoa_small_positive
+sprintf(std_string, "%.15f", 3.14);
+s21_dtoa(s21_string, 3.14, 15, FALSE);
+ck_assert_str_eq(std_string, s21_string);
+
+
+#test s21_itoa_small_negative
+sprintf(std_string, "%f", -3.14);
+s21_dtoa(s21_string, -3.14, 6, FALSE);
+ck_assert_str_eq(std_string, s21_string);
+
+
+#test s21_itoa_presision_is_S21_NULL
+sprintf(std_string, "%.f", -3.14);
+s21_dtoa(s21_string, -3.14, 0, FALSE);
+ck_assert_str_eq(std_string, s21_string);
+
+
+#test s21_dtoa_normal_round_comparsion
+sprintf(std_string, "%.3f", 19.99955);
+s21_dtoa(s21_string, 19.99955, 3, FALSE);
+ck_assert_str_eq(std_string, s21_string);
+
+
+#test s21_dtoa_round_comparsion_to_integer_part
+sprintf(std_string, "%.f", 19.99955);
+s21_dtoa(s21_string, 19.99955, 0, FALSE);
+ck_assert_str_eq(std_string, s21_string);
+
+
+#test s21_dtoa_result_return
+// The function should return the number of bytes (chars) that were written.
+int std_result, s21_result;
+std_result = sprintf(std_string, "%.f", 19.99955);
+s21_result = s21_dtoa(s21_string, 19.99955, 0, FALSE);
+ck_assert_int_eq(std_result, s21_result);
+
+
+#test s21_dtoa_preserve_radix_if_precicion_is_zero_but_require_radix_is_true
+sprintf(std_string, "%#.f", 19.99955);
+s21_dtoa(s21_string, 19.99955, 0, TRUE);
+ck_assert_str_eq(std_string, s21_string);

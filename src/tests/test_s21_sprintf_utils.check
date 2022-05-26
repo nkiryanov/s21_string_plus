@@ -1,0 +1,286 @@
+#include <errno.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "../s21_sprintf_utils/s21_sprintf_utils.h"
+#include "../s21_string.h"
+
+
+specifier_t spec;
+specifier_t *spec_ptr = &spec;
+char s21_dest[LL_MAX_WIDTH + 100];
+char std_dest[LL_MAX_WIDTH + 100];
+
+void setup(void) {
+    // Empty global variales before test run.
+    specifier_t tmp_spec = SPECIFIER_DEFAULTS;
+    spec = tmp_spec;
+    s21_dest[0] = std_dest[0] = '\0';
+}
+
+void teardown(void) {}
+
+void wrapper__get_number_format(const char *format, int *number_ptr, ...) {
+    // Wrapper to envoke _get_width_precision().
+    // We have to create va_list and pass it to the function. Didn't find any
+    // other way how to mock va_list.
+    va_list args;
+    va_start(args, number_ptr);
+    _get_width_precision(format, number_ptr, &args);
+    va_end(args);
+}
+
+void wrapper__integer_handler(specifier_t *spec_ptr, ...) {
+    // Wrapper to envoke _integer_handler().
+    // We have to create and pass va_list in test function.
+    va_list args;
+    va_start(args, spec_ptr);
+    _integer_handler(s21_dest, spec_ptr, &args);
+    va_end(args);
+}
+
+
+#suite s21_sprintf_utils
+
+
+#test s21__str_to_uppercase
+// Lowercase should be replaced to uppercase
+strcpy(s21_dest, "AafFzZ{}`");
+_str_to_uppercase(s21_dest);
+ck_assert_str_eq(s21_dest, "AAFFZZ{}`");
+
+
+#test s21__get_flags_plus_flag
+// Test plus `+` flag is read correctly
+_get_flags("%+d", spec_ptr);
+ck_assert_int_eq(spec.sign_flag, '+');
+
+
+#test s21__get_flags_space_flag
+// Test space ` ` flag is read correctly
+_get_flags("% d", spec_ptr);
+ck_assert_int_eq(spec.sign_flag, ' ');
+
+
+#test s21__get_flags_plus_flag_has_precedence
+// Test plus `+` has precedence on space ` ` flag.
+_get_flags("% +d", spec_ptr);
+ck_assert_int_eq(spec.sign_flag, '+');
+_get_flags("%+ d", spec_ptr);
+ck_assert_int_eq(spec.sign_flag, '+');
+
+
+#test s21__get_flags_left_justified_flag
+// Test left `-` flag is read correctly
+_get_flags("%-d", spec_ptr);
+ck_assert_int_eq(spec.adjustment, LeftJustified);
+
+
+#test s21__get_flags_leading_zero_flag
+// Test zero `0` flag is read correctly
+_get_flags("%0d", spec_ptr);
+ck_assert_int_eq(spec.adjustment, ZeroRightJustified);
+
+
+#test s21__get_flags_left_justified_has_precedence
+// Test left-justified flag `-` has precedence on leading zeros flag `0`
+_get_flags("%-0d", spec_ptr);
+ck_assert_int_eq(spec.adjustment, LeftJustified);
+_get_flags("%0-d", spec_ptr);
+ck_assert_int_eq(spec.adjustment, LeftJustified);
+
+
+#test s21__get_flags_hash_flag
+// Test hash `#` flag is read correctly
+_get_flags("%#d", spec_ptr);
+ck_assert_int_eq(spec_ptr->hash_flag, TRUE);
+
+
+#test s21__get_flags_flags_combination
+// Test combination of the flags
+_get_flags("%# 0-+d", spec_ptr);
+ck_assert_int_eq(spec.adjustment, LeftJustified);
+ck_assert_int_eq(spec.hash_flag, TRUE);
+ck_assert_int_eq(spec.sign_flag, '+');
+
+
+#test s21__get_number
+// Get width from format string
+int number = 0;
+wrapper__get_number_format("20", &number);
+ck_assert_int_eq(number, 20);
+
+
+#test s21__get_number_from_va_list
+// Get number from va_list if asterisk symbol is present.
+// After reading the value args should point to next variable.
+int number = 0;
+wrapper__get_number_format("120*", &number, -911);
+ck_assert_int_eq(number, -911);
+
+#test s21__get_length_modifier_allowd_modifiers
+// Test `h`, `l`, `L` length modifiers
+_get_length_modifier("hd", spec_ptr);
+ck_assert_int_eq(spec_ptr->modifier, hModifier);
+_get_length_modifier("ld", spec_ptr);
+ck_assert_int_eq(spec_ptr->modifier, lModifier);
+_get_length_modifier("Lf", spec_ptr);
+ck_assert_int_eq(spec_ptr->modifier, LModifier);
+
+
+#test s21__get_length_modifier_no_modifier_should_be_found
+// There is no length modifier in the string.
+_get_length_modifier(" f", spec_ptr);
+ck_assert_int_eq(spec_ptr->modifier, OrdinaryModifier);
+
+
+#test s21__get_coversion_specifier_allowed
+// Test several allowed (`d`, `%`, etc) conversion specifiers
+_get_conversion_specifier("d", spec_ptr);
+ck_assert_int_eq(spec_ptr->conversion, 'd');
+_get_conversion_specifier("%", spec_ptr);
+ck_assert_int_eq(spec_ptr->conversion, '%');
+
+
+#test s21__get_coversion_specifier_disallowed
+// Test disallowed conversion specifier
+_get_conversion_specifier("a", spec_ptr);
+ck_assert_int_eq(spec_ptr->conversion, '\0');
+
+
+#test s21__integer_handler_minimal_width
+// Minimal width is bigger than num
+spec_ptr->width = 10;
+wrapper__integer_handler(spec_ptr, 100);
+sprintf(std_dest, "%10d", 100);
+ck_assert_str_eq(std_dest, s21_dest);
+
+
+#test s21__integer_handler_minimal_width_is_less_number
+// Minimal width is less than num
+spec_ptr->width = 2;
+wrapper__integer_handler(spec_ptr, 100);
+sprintf(std_dest, "%2d", 100);
+ck_assert_str_eq(std_dest, s21_dest);
+
+
+#test s21__integer_handler_minimal_width_with_signed_number
+// Minimal width is bigger than number and number is signed
+spec_ptr->width = 10;
+wrapper__integer_handler(spec_ptr, -100);
+sprintf(std_dest, "%10d", -100);
+ck_assert_str_eq(std_dest, s21_dest);
+
+
+#test s21__integer_handler_width_is_bigger_than_precision
+// Minimal width is bigger than precision
+spec_ptr->width = 10;
+spec_ptr->precision = 5;
+wrapper__integer_handler(spec_ptr, 100);
+sprintf(std_dest, "%10.5d", 100);
+ck_assert_str_eq(std_dest, s21_dest);
+
+
+#test s21__integer_handler_width_is_lower_than_precision
+// Minimal width is lower than precision
+spec_ptr->width = 10;
+spec_ptr->precision = 11;
+wrapper__integer_handler(spec_ptr, 100);
+sprintf(std_dest, "%10.11d", 100);
+ck_assert_str_eq(std_dest, s21_dest);
+
+
+#test s21__integer_handler_precision_is_less_than_number
+// Number has more digits than precision
+spec_ptr->width = 10;
+spec_ptr->precision = 3;
+wrapper__integer_handler(spec_ptr, 1100);
+sprintf(std_dest, "%10.3d", 1100);
+ck_assert_str_eq(std_dest, s21_dest);
+
+
+#test s21__integer_handler_precision_and_number_is_null
+// Precision and number is null.
+spec_ptr->precision = 0;
+wrapper__integer_handler(spec_ptr, 0);
+sprintf(std_dest, "%.d", 0);
+ck_assert_str_eq(std_dest, s21_dest);
+
+
+#test s21__integer_handler_precision_and_number_is_null_space_flag
+// Precision and number is null, space sign flag is set.
+spec_ptr->precision = 0;
+spec_ptr->sign_flag = ' ';
+wrapper__integer_handler(spec_ptr, 0);
+sprintf(std_dest, "% .d", 0);
+ck_assert_str_eq(std_dest, s21_dest);
+
+
+#test s21__integer_handler_adjustment_zero
+// Right adjustment with leading zeros
+spec_ptr->width = 10;
+spec_ptr->adjustment = ZeroRightJustified;
+wrapper__integer_handler(spec_ptr, 10);
+sprintf(std_dest, "%010d", 10);
+ck_assert_str_eq(std_dest, s21_dest);
+
+
+#test s21__integer_handler_adjustment_zero_with_sign_flag
+// Right adjustment with leading zeros and '+' flag.
+spec_ptr->width = 10;
+spec_ptr->adjustment = ZeroRightJustified;
+spec_ptr->sign_flag = '+';
+wrapper__integer_handler(spec_ptr, 10);
+sprintf(std_dest, "%0+10d", 10);
+ck_assert_str_eq(std_dest, s21_dest);
+
+
+#test s21__integer_handler_left_adjustment
+// Left adjustment with '+' flag.
+spec_ptr->width = 10;
+spec_ptr->adjustment = LeftJustified;
+spec_ptr->precision = 5;
+spec_ptr->sign_flag = '+';
+wrapper__integer_handler(spec_ptr, 10);
+sprintf(std_dest, "%-+10.5d", 10);
+ck_assert_str_eq(std_dest, s21_dest);
+
+
+#test s21__integer_handler_left_adjustment_negative
+// Left justified with precision, width, '+' flag.
+spec_ptr->width = 10;
+spec_ptr->adjustment = LeftJustified;
+spec_ptr->precision = 5;
+wrapper__integer_handler(spec_ptr, -10);
+sprintf(std_dest, "%-10.5d", -10);
+ck_assert_str_eq(std_dest, s21_dest);
+
+
+#test s21__integer_handler_octal_representation
+// Left justified with precision, width, '+' flag. Octal radix.
+spec_ptr->width = 10;
+spec_ptr->adjustment = LeftJustified;
+spec_ptr->precision = 5;
+spec_ptr->conversion = 'o';
+wrapper__integer_handler(spec_ptr, 10);
+sprintf(std_dest, "%-10.5o", 10);
+ck_assert_str_eq(std_dest, s21_dest);
+
+
+#test s21__integer_handler_hex_representation
+// Left justified with precision, width, '+' flag. Hex radix.
+spec_ptr->width = 10;
+spec_ptr->adjustment = LeftJustified;
+spec_ptr->precision = 5;
+spec_ptr->conversion = 'x';
+wrapper__integer_handler(spec_ptr, 10);
+sprintf(std_dest, "%-10.5x", 10);
+ck_assert_str_eq(std_dest, s21_dest);
+
+
+#main-pre
+// Add fixtures to all the tests. `tc1_1` is the name of the first
+// test case. Read `man checkmk` for details.
+tcase_add_checked_fixture(tc1_1, setup, teardown);

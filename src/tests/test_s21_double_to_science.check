@@ -1,0 +1,39 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#include "../s21_string.h"
+
+#suite s21_double_to_science
+
+// #test s21_double_to_science_small_positive
+// char s21_str[10];
+// char str[10];
+// long double number = 2.5;
+// s21_double_to_science(s21_str, number, 3, FALSE);
+// sprintf(str, "%.3Le", number);
+// ck_assert_str_eq(str, s21_str);
+
+#test s21_double_to_science_zero
+char s21_str[10];
+char str[10];
+long double number = 0;
+s21_double_to_science(s21_str, number, 3, FALSE);
+sprintf(str, "%.3Le", number);
+ck_assert_str_eq(str, s21_str);
+
+// #test s21_double_to_science_max_double
+// char s21_str[10];
+// char str[10];
+// long double number = 16383.1;
+// s21_double_to_science(s21_str, number, 3, FALSE);
+// sprintf(str, "%.3Le", number);
+// ck_assert_str_eq(str, s21_str);
+
+// #test s21_double_to_science_small_negative
+// char s21_str_new[20];
+// char str_new[20];
+// long double number = -1.2;
+// int size_s21 = s21_double_to_science(s21_str_new, number, 3, FALSE);
+// int size = sprintf(str_new, "%.3Le", number);
+// ck_assert_str_eq(str_new, s21_str_new);
+// ck_assert_int_eq(size, size_s21);

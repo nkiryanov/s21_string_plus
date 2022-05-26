@@ -1,0 +1,27 @@
+#include <stdlib.h>
+#include <string.h>
+
+#include "../s21_string.h"
+
+#suite s21_strcat
+
+#test s21_strcat_append_empty_sting_to_dest
+// Test appending null string returns same string
+char dest[10] = "string1";
+char s21_dest[10] = "string1";
+char src[] = "";
+ck_assert_str_eq(strcat(dest, src), s21_strcat(s21_dest, src));
+
+#test s21_strcat_append_not_empty_sting_by_not_empty
+// Test normal behavior. `dest` should be appended in place.
+char dest[100] = "dest";
+char s21_dest[100] = "dest";
+char src[] = " source";
+ck_assert_str_eq(strcat(dest, src), s21_strcat(s21_dest, src));
+
+#test test_s21_strcat_append_string_to_empty_dest
+// Test normal behavior. strcat should return pointer to appended string.
+char dest[10] = "";
+char s21_dest[10] = "";
+char src[] = " source";
+ck_assert_str_eq(strcat(dest, src), s21_strcat(s21_dest, src));

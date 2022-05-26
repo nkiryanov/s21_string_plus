@@ -1,0 +1,28 @@
+#include <string.h>
+#include <stdlib.h>
+
+#include "../s21_string.h"
+
+#suite s21_strcmp
+
+#test s21_strcmp_first_string_bigger
+char string_1[] = "12345 6Holla";
+char string_2[] = "12345 5Montana";
+ck_assert_int_gt(s21_strcmp(string_1, string_2), 0);
+ck_assert_int_gt(strcmp(string_1, string_2), 0);
+
+#test s21_strcmp_second_string_bigger
+char string_1[] = "12345 5Holla";
+char string_2[] = "12345 6Montana";
+ck_assert_int_lt(s21_strcmp(string_1, string_2), 0);
+ck_assert_int_lt(strcmp(string_1, string_2), 0);
+
+#test s21_strcmp_equal
+char string_1[] = "Benicook Cucumber";
+char string_2[] = "Benicook Cucumber";
+ck_assert_int_eq(s21_strcmp(string_1, string_2), strcmp(string_1, string_2));
+
+#test s21_strcmp_empty_string
+char string_1[] = "";
+char string_2[] = "";
+ck_assert_int_eq(s21_strcmp(string_1, string_2), strcmp(string_1, string_2));

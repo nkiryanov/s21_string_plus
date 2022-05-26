@@ -1,0 +1,288 @@
+#include <limits.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+#include "../s21_string.h"
+
+#suite s21_sprintf_float
+
+// Global variables as fixtures.
+char std_dest[100], s21_dest[100];
+int std_result, s21_result;
+
+
+#test s21_sprintf_nan
+// Float NaN representation
+double d_value = NAN;
+std_result = sprintf(std_dest, "%#20.e", d_value);
+s21_result = s21_sprintf(s21_dest, "%#20.e", d_value);
+ck_assert_str_eq(std_dest, s21_dest);
+ck_assert_int_eq(std_result, s21_result);
+
+
+#test s21_sprintf_inf_representation
+// Float NaN representation
+double d_value = INFINITY;
+std_result = sprintf(std_dest, "%-20.f", d_value);
+s21_result = s21_sprintf(s21_dest, "%-20.f", d_value);
+ck_assert_str_eq(std_dest, s21_dest);
+ck_assert_int_eq(std_result, s21_result);
+
+
+#test s21_sprintf_float_specifier_only
+// Only f specifier without anything else
+std_result = sprintf(std_dest, "%f", 324.0000);
+s21_result = s21_sprintf(s21_dest, "%f", 324.0000);
+ck_assert_str_eq(std_dest, s21_dest);
+ck_assert_int_eq(std_result, s21_result);
+
+
+#test s21_sprintf_long_float_specifier_only
+// Only Long f specifier without anything else
+long double ld_value = 3239329329324000012.00001212;
+std_result = sprintf(std_dest, "%Lf", ld_value);
+s21_result = s21_sprintf(s21_dest, "%Lf", ld_value);
+ck_assert_str_eq(std_dest, s21_dest);
+ck_assert_int_eq(std_result, s21_result);
+
+
+#test s21_sprintf_float_precision_two
+// Only f specifier with precision 2
+double d_value = 1999.99991212;
+std_result = sprintf(std_dest, "%.2f", d_value);
+s21_result = s21_sprintf(s21_dest, "%.2f", d_value);
+ck_assert_str_eq(std_dest, s21_dest);
+ck_assert_int_eq(std_result, s21_result);
+
+
+#test s21_sprintf_float_precision_ten
+// Only f specifier with precision 10
+double d_value = 1999.9999121209;
+std_result = sprintf(std_dest, "%.10f", d_value);
+s21_result = s21_sprintf(s21_dest, "%.10f", d_value);
+ck_assert_str_eq(std_dest, s21_dest);
+ck_assert_int_eq(std_result, s21_result);
+
+
+#test s21_sprintf_float_precision_zero
+// Only f specifier with precision zero
+double d_value = 1999.9999121209;
+std_result = sprintf(std_dest, "%.f", d_value);
+s21_result = s21_sprintf(s21_dest, "%.f", d_value);
+ck_assert_str_eq(std_dest, s21_dest);
+ck_assert_int_eq(std_result, s21_result);
+
+
+#test s21_sprintf_long_float_width_50
+// Only f specifier with width 50 and precision 10
+double d_value = 1999.9999121209;
+std_result = sprintf(std_dest, "%50.10f", d_value);
+s21_result = s21_sprintf(s21_dest, "%50.10f", d_value);
+ck_assert_str_eq(std_dest, s21_dest);
+ck_assert_int_eq(std_result, s21_result);
+
+
+#test s21_sprintf_float_space_flag
+// Only f specifier with flag ` `
+double d_value = 1999.9999121209;
+std_result = sprintf(std_dest, "% f", d_value);
+s21_result = s21_sprintf(s21_dest, "% f", d_value);
+ck_assert_str_eq(std_dest, s21_dest);
+ck_assert_int_eq(std_result, s21_result);
+
+
+#test s21_sprintf_float_plus_flag
+// Only f specifier with flag `+`
+double d_value = 1999.9999121209;
+std_result = sprintf(std_dest, "%+f", d_value);
+s21_result = s21_sprintf(s21_dest, "%+f", d_value);
+ck_assert_str_eq(std_dest, s21_dest);
+ck_assert_int_eq(std_result, s21_result);
+
+
+#test s21_sprintf_float_left_justified_flag
+// Only f specifier with flag `-`
+double d_value = 1999.9999121209;
+std_result = sprintf(std_dest, "%-50f", d_value);
+s21_result = s21_sprintf(s21_dest, "%-50f", d_value);
+ck_assert_str_eq(std_dest, s21_dest);
+ck_assert_int_eq(std_result, s21_result);
+
+
+#test s21_sprintf_float_space_flag_with_negative
+// Only f specifier with space flag with negative
+double d_value = -1999.9999121209;
+std_result = sprintf(std_dest, "% f", d_value);
+s21_result = s21_sprintf(s21_dest, "% f", d_value);
+ck_assert_str_eq(std_dest, s21_dest);
+ck_assert_int_eq(std_result, s21_result);
+
+
+#test s21_sprintf_float_plus_flag_with_negative
+// Only f specifier with plus flag with negative
+double d_value = -1999.9999121209;
+std_result = sprintf(std_dest, "%+50f", d_value);
+s21_result = s21_sprintf(s21_dest, "%+50f", d_value);
+ck_assert_str_eq(std_dest, s21_dest);
+ck_assert_int_eq(std_result, s21_result);
+
+
+#test s21_sprintf_float_zero_right_justified
+// Only f specifier with zero right justified
+double d_value = 59.9899121209;
+std_result = sprintf(std_dest, "%+050f", d_value);
+s21_result = s21_sprintf(s21_dest, "%+050f", d_value);
+ck_assert_str_eq(std_dest, s21_dest);
+ck_assert_int_eq(std_result, s21_result);
+
+
+#test s21_sprintf_float_hash_flag_enabled_value_zero_precision
+// Only f specifier with `#` flag and precision is 0
+double d_value = 59.9899121209;
+std_result = sprintf(std_dest, "%#.f", d_value);
+s21_result = s21_sprintf(s21_dest, "%#.f", d_value);
+ck_assert_str_eq(std_dest, s21_dest);
+ck_assert_int_eq(std_result, s21_result);
+
+
+#test s21_sprintf_float_different_flags_combinations
+// Only f specifier with width, precision, 0 flag, hash flag, plus flag
+double d_value = 59.9899121209;
+std_result = sprintf(std_dest, "%#+070.45f", d_value);
+s21_result = s21_sprintf(s21_dest, "%#+070.45f", d_value);
+ck_assert_str_eq(std_dest, s21_dest);
+ck_assert_int_eq(std_result, s21_result);
+
+
+#test s21_sprintf_float_science_notation_width_precision
+// Only f specifier with science notation. Width and precision
+double d_value = 59.9899121209;
+std_result = sprintf(std_dest, "%+070.10e", d_value);
+s21_result = s21_sprintf(s21_dest, "%+070.10e", d_value);
+ck_assert_str_eq(std_dest, s21_dest);
+ck_assert_int_eq(std_result, s21_result);
+
+#test s21_sprintf_float_science_notation_round_check
+// Check science rounding
+double d_value = 0.343343443434;
+std_result = sprintf(std_dest, "%e", d_value);
+s21_result = s21_sprintf(s21_dest, "%e", d_value);
+ck_assert_str_eq(std_dest, s21_dest);
+ck_assert_int_eq(std_result, s21_result);
+
+#test s21_sprintf_float_science_notation_precision_zero
+// Only f specifier with science notation. Precision is zero.
+double d_value = -59.9899121209;
+std_result = sprintf(std_dest, "%+070.e", d_value);
+s21_result = s21_sprintf(s21_dest, "%+070.e", d_value);
+ck_assert_str_eq(std_dest, s21_dest);
+ck_assert_int_eq(std_result, s21_result);
+
+
+#test s21_sprintf_float_science_notation_zero_value
+// Only f specifier with science notation. Precision is zero.
+double d_value = 0.0;
+std_result = sprintf(std_dest, "%e", d_value);
+s21_result = s21_sprintf(s21_dest, "%e", d_value);
+ck_assert_str_eq(std_dest, s21_dest);
+ck_assert_int_eq(std_result, s21_result);
+
+
+#test s21_sprintf_float_science_notation_negative_value_left_justified
+// Negative science value and left justified
+double d_value = -34.545453;
+std_result = sprintf(std_dest, "%-e", d_value);
+s21_result = s21_sprintf(s21_dest, "%-e", d_value);
+ck_assert_str_eq(std_dest, s21_dest);
+ck_assert_int_eq(std_result, s21_result);
+
+
+#test s21_sprintf_float_science_notation_ee_specifier_width_space_flag
+// ee specifier science value and left justified
+double d_value = 34.545453;
+std_result = sprintf(std_dest, "%0 10E", d_value);
+s21_result = s21_sprintf(s21_dest, "%0 11E", d_value);
+ck_assert_str_eq(std_dest, s21_dest);
+ck_assert_int_eq(std_result, s21_result);
+
+
+#test s21_sprintf_float_science_notation_with_hash_flag
+// Float science notation with hash `#` flag
+double d_value = 4.545453;
+std_result = sprintf(std_dest, "%#20.e", d_value);
+s21_result = s21_sprintf(s21_dest, "%#20.e", d_value);
+ck_assert_str_eq(std_dest, s21_dest);
+ck_assert_int_eq(std_result, s21_result);
+
+
+#test s21_sprintf_float_alter_g_form_should_be_e
+// Float alter notation. Should be science notation
+double d_value = 4233232.545453;
+std_result = sprintf(std_dest, "%g", d_value);
+s21_result = s21_sprintf(s21_dest, "%g", d_value);
+ck_assert_str_eq(std_dest, s21_dest);
+ck_assert_int_eq(std_result, s21_result);
+
+
+#test s21_sprintf_float_alter_g_form_should_be_f
+// Float alter notation. Should be float
+double d_value = 4.54500000;
+std_result = sprintf(std_dest, "%g", d_value);
+s21_result = s21_sprintf(s21_dest, "%g", d_value);
+ck_assert_str_eq(std_dest, s21_dest);
+ck_assert_int_eq(std_result, s21_result);
+
+
+#test s21_sprintf_float_alter_g_zero_value
+// Float alter notation. Zero value
+double d_value = 0.0;
+std_result = sprintf(std_dest, "%g", d_value);
+s21_result = s21_sprintf(s21_dest, "%g", d_value);
+ck_assert_str_eq(std_dest, s21_dest);
+ck_assert_int_eq(std_result, s21_result);
+
+
+#test s21_sprintf_float_alter_g_zero_value_hash_flag
+// Float alter notation. Zero value with hash flag
+double d_value = 0.0;
+std_result = sprintf(std_dest, "%#.5g", d_value);
+s21_result = s21_sprintf(s21_dest, "%#.5g", d_value);
+ck_assert_str_eq(std_dest, s21_dest);
+ck_assert_int_eq(std_result, s21_result);
+
+
+#test s21_sprintf_float_alter_g_should_be_science_with_hash
+// Float alter notation. Should be science notation. Hash flag is TRUE
+double d_value = 34345345.34534000;
+std_result = sprintf(std_dest, "%#.5g", d_value);
+s21_result = s21_sprintf(s21_dest, "%#.5g", d_value);
+ck_assert_str_eq(std_dest, s21_dest);
+ck_assert_int_eq(std_result, s21_result);
+
+
+#test s21_sprintf_float_alter_gg_should_be_science_with_hash
+// Float alter G notation. Should be science notation. Hash flag is TRUE
+double d_value = 232232230.343343443434;
+std_result = sprintf(std_dest, "%#G", d_value);
+s21_result = s21_sprintf(s21_dest, "%#G", d_value);
+ck_assert_str_eq(std_dest, s21_dest);
+ck_assert_int_eq(std_result, s21_result);
+
+
+#test s21_sprintf_float_alter_gg_should_be_float
+// Float alter G notation. Should be float notation. Hash flag is TRUE
+double d_value = 0.343343443434;
+std_result = sprintf(std_dest, "%#.5G", d_value);
+s21_result = s21_sprintf(s21_dest, "%#.5G", d_value);
+ck_assert_str_eq(std_dest, s21_dest);
+ck_assert_int_eq(std_result, s21_result);
+
+
+#test s21_sprintf_float_alter_gg_should_be_science_precision_zero
+// Float alter G notation. Should be science notation. Precision is zero
+double d_value = 232232230.343343443434;
+std_result = sprintf(std_dest, "%.G", d_value);
+s21_result = s21_sprintf(s21_dest, "%.G", d_value);
+ck_assert_str_eq(std_dest, s21_dest);
+ck_assert_int_eq(std_result, s21_result);

@@ -1,0 +1,17 @@
+#include <stdlib.h>
+
+#include "../s21_string.h"
+
+#suite s21_digit
+
+#test s21_isdigit_digit
+ck_assert_int_eq(1, s21_isdigit('9'));
+
+#test s21_isdigit_S21_NULL
+ck_assert_int_eq(1, s21_isdigit('0'));
+
+#test s21_isdigit_not_digit
+ck_assert_int_eq(0, s21_isdigit('c'));
+
+#test s21_isdigit_end_symbol
+ck_assert_int_eq(0, s21_isdigit('\0'));

@@ -1,0 +1,33 @@
+#include <limits.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "../s21_string.h"
+
+char std_string[40], s21_string[40];
+
+#suite s21_uitoa
+
+
+#test s21_uitoa_small_positive
+s21_uitoa(s21_string, 100, 10);
+ck_assert_str_eq("100", s21_string);
+
+
+#test s21_uitoa_long_max
+s21_uitoa(s21_string, ULONG_MAX, 10);
+sprintf(std_string, "%lu", ULONG_MAX);
+ck_assert_str_eq(std_string, s21_string);
+
+
+#test s21_uitoa_uint_octal_representation 
+s21_uitoa(s21_string, 5994, 8);
+sprintf(std_string, "%o", 5994);
+ck_assert_str_eq(std_string, s21_string);
+
+
+#test s21_uitoa_hex_representation 
+s21_uitoa(s21_string, 5994, 16);
+sprintf(std_string, "%x", 5994);
+ck_assert_str_eq(std_string, s21_string);

@@ -1,0 +1,25 @@
+#include <limits.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+#include "../s21_string.h"
+
+#suite s21_sprintf_bytes_proceeded
+
+// Global variables as fixtures.
+char std_dest[100], s21_dest[100];
+int std_result, s21_result;
+
+#test s21_sprintf_bytes_proceeded
+// Only bytes proceeded specifier (`n`) without anything else
+sprintf(std_dest, "some_text %n", &std_result);
+s21_sprintf(s21_dest, "some_text %n", &s21_result);
+ck_assert_int_eq(std_result, s21_result);
+
+
+#test s21_sprintf_bytes_proceeded_with_another_specifier
+// Only bytes proceeded specifier (`n`) with ld specifier
+long some_value = 5945945954954;
+sprintf(std_dest, "some_text %ld, %n", some_value,  &std_result);
+s21_sprintf(s21_dest, "some_text %ld, %n", some_value, &s21_result);
+ck_assert_int_eq(std_result, s21_result);

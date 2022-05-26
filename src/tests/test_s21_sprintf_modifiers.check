@@ -1,0 +1,35 @@
+#include <limits.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+#include "../s21_string.h"
+
+#suite s21_sprintf_modifiers
+
+// Global variables as fixtures.
+char std_dest[100], s21_dest[100];
+int std_result, s21_result;
+
+
+// Tests
+// u + l
+#test s21_sprintf_usigned_modifiers_l_max
+s21_result = s21_sprintf(s21_dest, "%lu", ULONG_MAX);
+std_result = sprintf(std_dest, "%lu", ULONG_MAX);
+ck_assert_str_eq(std_dest, s21_dest);
+ck_assert_int_eq(std_result, s21_result);
+
+
+// d + h
+#test s21_sprintf_int_modifier_l_min
+s21_result = s21_sprintf(s21_dest, "%ld", LONG_MIN);
+std_result = sprintf(std_dest, "%ld", LONG_MIN);
+ck_assert_str_eq(std_dest, s21_dest);
+ck_assert_int_eq(std_result, s21_result);
+
+
+#test s21_sprintf_int_l_modifier_max
+s21_result = s21_sprintf(s21_dest, "%ld", LONG_MAX);
+std_result = sprintf(std_dest, "%ld", LONG_MAX);
+ck_assert_str_eq(std_dest, s21_dest);
+ck_assert_int_eq(std_result, s21_result);

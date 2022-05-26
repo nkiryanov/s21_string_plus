@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  tests:
+    build: .
+    image: "string-plus-tests"
+    command: /bin/fish
+    tty: true
+    volumes:
+      - ./:/code/
+    environment:
+      - CK_FORK=no

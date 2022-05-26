@@ -1,0 +1,56 @@
+#include <limits.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "../s21_string.h"
+
+char std_string[40], s21_string[40];
+
+#suite s21_itoa
+
+
+#test s21_itoa_small_positive
+s21_itoa(s21_string, 100, 10);
+ck_assert_str_eq("100", s21_string);
+
+
+#test s21_itoa_small_negative
+s21_itoa(s21_string, -100, 10);
+ck_assert_str_eq("-100", s21_string);
+
+
+#test s21_itoa_int_max
+s21_itoa(s21_string, LONG_MAX, 10);
+sprintf(std_string, "%ld", LONG_MAX);
+ck_assert_str_eq(std_string, s21_string);
+
+
+#test s21_itoa_int_min
+s21_itoa(s21_string, LONG_MIN, 10);
+sprintf(std_string, "%ld", LONG_MIN);
+ck_assert_str_eq(std_string, s21_string);
+
+
+#test s21_itoa_int_octal_representation 
+s21_itoa(s21_string, 5994, 8);
+sprintf(std_string, "%o", 5994);
+ck_assert_str_eq(std_string, s21_string);
+
+
+#test s21_itoa_hex_representation 
+s21_itoa(s21_string, 5994, 16);
+sprintf(std_string, "%x", 5994);
+ck_assert_str_eq(std_string, s21_string);
+
+
+#test s21_itoa_returns_correct_string_length_negative
+int returned_length = s21_itoa(s21_string, LONG_MIN, 10);
+int actual_length = strlen(s21_string);
+ck_assert_int_eq(returned_length, actual_length);
+
+
+#test s21_itoa_returns_correct_string_length_positive
+int returned_length = s21_itoa(s21_string, LONG_MIN, 10);
+int actual_length = strlen(s21_string);
+ck_assert_int_eq(returned_length, actual_length);

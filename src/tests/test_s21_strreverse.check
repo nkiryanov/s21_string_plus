@@ -1,0 +1,13 @@
+#include "../s21_string.h"
+
+#suite s21_strreverse
+
+
+#test s21_strreverse_non_empty_string
+char string[] = "abc";
+ck_assert_str_eq("cba", s21_strreverse(string));
+
+
+#test s21_strreverse_empty_string
+char empty_string[] = "";
+ck_assert_str_eq("", s21_strreverse(empty_string));

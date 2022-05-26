@@ -1,0 +1,22 @@
+#include <string.h>
+#include <stdlib.h>
+
+#include "../s21_string.h"
+
+#suite s21_strlen
+
+#test s21_strlen_normal_behavior_case_1
+char s1[] = "hello world";
+ck_assert_int_eq(strlen(s1), s21_strlen(s1));
+
+#test s21_strlen_normal_behavior_case_2
+char s1[] = "hll wrld";
+ck_assert_int_eq(strlen(s1), s21_strlen(s1));
+
+#test s21_strlen_empty_string
+char string[] = "";
+ck_assert_int_eq(strlen(string), s21_strlen(string));
+
+#test s21_strlen_string_with_null_character
+char string[] = "Some text\0 Another text after null";
+ck_assert_int_eq(strlen(string), s21_strlen(string));

@@ -1,0 +1,46 @@
+#include <limits.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+#include "../s21_string.h"
+
+#suite s21_sprintf_pointer
+
+// Global variables as fixtures.
+char std_dest[100], s21_dest[100];
+int std_result, s21_result;
+
+#test s21_sprintf_pointer_specifier_only
+// Only p specifier without anything else
+int some_value = 0;
+std_result = sprintf(std_dest, "%p", &some_value);
+s21_result = s21_sprintf(s21_dest, "%p", &some_value);
+ck_assert_str_eq(std_dest, s21_dest);
+ck_assert_int_eq(std_result, s21_result);
+
+
+#test s21_sprintf_pointer_specifier_with_width
+// Only p specifier with width
+int some_value = 12312;
+std_result = sprintf(std_dest, "%70p", &some_value);
+s21_result = s21_sprintf(s21_dest, "%70p", &some_value);
+ck_assert_str_eq(std_dest, s21_dest);
+ck_assert_int_eq(std_result, s21_result);
+
+
+#test s21_sprintf_pointer_specifier_width_left_justified
+// Only p specifier with width and left justification
+int some_value = 12312;
+std_result = sprintf(std_dest, "%-70p", &some_value);
+s21_result = s21_sprintf(s21_dest, "%-70p", &some_value);
+ck_assert_str_eq(std_dest, s21_dest);
+ck_assert_int_eq(std_result, s21_result);
+
+
+#test s21_sprintf_pointer_on_string
+// Only p specifier with width and left justification
+char string[] = "aaaaaaa";
+std_result = sprintf(std_dest, "%p", &string);
+s21_result = s21_sprintf(s21_dest, "%p", &string);
+ck_assert_str_eq(std_dest, s21_dest);
+ck_assert_int_eq(std_result, s21_result);

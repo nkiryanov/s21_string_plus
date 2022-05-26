@@ -1,0 +1,43 @@
+#include <stdlib.h>
+#include <string.h>
+
+#include "../s21_string.h"
+
+#suite s21_memmove
+
+#test s21_memmove_copy_empty_string
+char dest[100] = "some string";
+char s21_dest[100] = "some string";
+char src[] = "";
+ck_assert_str_eq((char *)memmove(dest, src, 1),
+                 (char *)s21_memmove(s21_dest, src, 1));
+
+#test s21_memmove_copy_non_empty_string
+char dest[100] = "destination";
+char s21_dest[100] = "destination";
+char src[] = "source";
+ck_assert_str_eq((char *)memmove(dest, src, 7),
+                 (char *)s21_memmove(s21_dest, src, 7));
+
+#test s21_memmove_copy_int_array
+int dest[100] = {0};
+int s21_dest[100] = {0};
+int src[] = {1, 2, 3};
+ck_assert_mem_eq((int *)memmove(dest, src, sizeof(int) * 3),
+                 (int *)s21_memmove(s21_dest, src, sizeof(int) * 3), 100);
+
+#test s21_memmove_copy_overlapping_string
+char s21_dest[10] = "12345";
+ck_assert_str_eq((char *)s21_memmove(s21_dest, s21_dest + 1, 4), "23455");
+
+
+#test s21_memmove_move_same_string
+char s21_str[10] = "12345";
+ck_assert_str_eq((char *)s21_memmove(s21_str, s21_str, 4), "12345");
+
+
+#test s21_memmove_move_src_overlap_destination_ptr_bigger
+char s21_dest[] = "1234578910";
+char std_dest[] = "1234578910";
+ck_assert_str_eq((char *)s21_memmove(s21_dest + 2, s21_dest, 5),
+                 (char *)memmove(std_dest + 2, std_dest, 5));

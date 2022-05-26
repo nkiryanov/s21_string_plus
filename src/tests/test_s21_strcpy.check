@@ -1,0 +1,30 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#include "../s21_string.h"
+
+#suite s21_strcpy
+
+#test s21_strcpy_normal_behavior_case_1
+char src[] = "Hello world";
+char dest_std[30];
+char dest_s21[30];
+ck_assert_str_eq(strcpy(dest_std, src), s21_strcpy(dest_s21, src));
+
+#test s21_strcpy_normal_behavior_case_2
+char src[] = "hll wrld";
+char dest_std[30];
+char dest_s21[30];
+ck_assert_str_eq(strcpy(dest_std, src), s21_strcpy(dest_s21, src));
+
+#test s21_strcpy_empty_string
+char src[] = "";
+char dest_std[30];
+char dest_s21[30];
+ck_assert_str_eq(strcpy(dest_std, src), s21_strcpy(dest_s21, src));
+
+#test s21_strcpy_string_with_null_character
+char src[] = "Some text\0 Another text after null";
+char dest_std[30];
+char dest_s21[30];
+ck_assert_str_eq(strcpy(dest_std, src), s21_strcpy(dest_s21, src));
